@@ -18,4 +18,4 @@ class PluginLoader {
 
         using UpdateFunc = void (*)(float);
         UpdateFunc m_update;
-}
+};

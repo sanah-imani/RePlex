@@ -16,4 +16,5 @@ add_executable(host
     host/plugin_loader.cpp
 )
 
+target_include_directories(host PRIVATE host)
 target_link_libraries(host PRIVATE dl)

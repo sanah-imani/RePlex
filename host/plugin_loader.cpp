@@ -15,8 +15,7 @@ bool PluginLoader::load()
     m_handle = dlopen(m_libraryPath.c_str(), RTLD_LAZY);
 
     if (!m_handle){
-        std::cerr << "Failed to load library:\n",
-                << dlerror() << '\n';
+        std::cerr << "Failed to load library:\n" << dlerror() << '\n';
         return false;
     }
 
