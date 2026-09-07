@@ -1,4 +1,0 @@
-/home/simani/RePlex/build/CMakeFiles/plugin.dir
-/home/simani/RePlex/build/CMakeFiles/host.dir
-/home/simani/RePlex/build/CMakeFiles/edit_cache.dir
-/home/simani/RePlex/build/CMakeFiles/rebuild_cache.dir
