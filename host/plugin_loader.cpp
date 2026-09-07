@@ -8,7 +8,7 @@ PluginLoader::PluginLoader(const std::string& libraryPath)
 {
 }
 
-bool PluginLoader::load()
+bool PluginLoader::load(HostAPI* api)
 {
     m_handle = dlopen(m_libraryPath.c_str(), RTLD_LAZY);
 
@@ -30,15 +30,15 @@ bool PluginLoader::load()
 
     // Optional symbols — silently skip if not exported
     m_init = reinterpret_cast<InitFunc>(dlsym(m_handle, "init"));
-    dlerror(); // clear any error from optional lookup
+    dlerror();
 
     m_shutdown = reinterpret_cast<ShutdownFunc>(dlsym(m_handle, "shutdown"));
-    dlerror(); // clear any error from optional lookup
+    dlerror();
 
     std::cout << "Plugin loaded successfully.\n";
 
-    // Call init if the plugin exports it
-    if (m_init) m_init();
+    // Pass the host API into the plugin on init
+    if (m_init) m_init(api);
 
     return true;
 }
@@ -46,7 +46,6 @@ bool PluginLoader::load()
 void PluginLoader::unload()
 {
     if (m_handle) {
-        // Call shutdown if the plugin exports it
         if (m_shutdown) m_shutdown();
 
         dlclose(m_handle);
@@ -65,17 +64,7 @@ bool PluginLoader::isLoaded() const
     return m_handle != nullptr;
 }
 
-void PluginLoader::init()
-{
-    if (m_init) m_init();
-}
-
 void PluginLoader::update(float dt)
 {
     if (m_update) m_update(dt);
-}
-
-void PluginLoader::shutdown()
-{
-    if (m_shutdown) m_shutdown();
 }

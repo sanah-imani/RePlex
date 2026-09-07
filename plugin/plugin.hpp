@@ -6,8 +6,10 @@
 #define EXPORT
 #endif
 
+#include "../host/host_api.hpp"
+
 extern "C" {
-    EXPORT void init();
+    EXPORT void init(HostAPI* api);
     EXPORT void update(float dt);
     EXPORT void shutdown();
 }
