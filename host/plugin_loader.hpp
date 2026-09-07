@@ -1,24 +1,24 @@
 #pragma once
 #include <string>
+#include "host_api.hpp"
 
 class PluginLoader {
 public:
     explicit PluginLoader(const std::string& libraryPath);
 
-    bool load();
+    // api* passed at load time so hot-reloads can use the same API instance
+    bool load(HostAPI* api);
     void unload();
 
     bool isLoaded() const;
 
-    void init();
     void update(float dt);
-    void shutdown();
 
 private:
     std::string m_libraryPath;
     void* m_handle = nullptr;
 
-    using InitFunc     = void (*)();
+    using InitFunc     = void (*)(HostAPI*);
     using UpdateFunc   = void (*)(float);
     using ShutdownFunc = void (*)();
 

@@ -1,18 +1,22 @@
 #include "plugin.hpp"
 
-#include <iostream>
+// s_api is a translation-unit local pointer — starts null,
+// set on init, cleared on shutdown.
+static HostAPI* s_api = nullptr;
 
-void init()
+void init(HostAPI* api)
 {
-    std::cout << "Plugin init\n";
+    s_api = api;
+    s_api->log("Plugin init");
 }
 
 void update(float dt)
 {
-    std::cout << "Plugin running, dt = " << dt << "\n";
+    if (s_api) s_api->log("Plugin running");
 }
 
 void shutdown()
 {
-    std::cout << "Plugin shutdown\n";
+    if (s_api) s_api->log("Plugin shutdown");
+    s_api = nullptr;
 }
