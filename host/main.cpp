@@ -5,7 +5,7 @@
 #include <atomic>
 #include <mutex>
 #include "host_api.hpp"
-#include "plugin_loader.hpp"
+#include "../runtime/plugin_manager.hpp"
 #include "../runtime/watcher.hpp"
 
 namespace fs = std::filesystem;
@@ -30,8 +30,8 @@ int main() {
     // Copy .so before loading so rebuilds can overwrite the original freely.
     fs::copy_file(kSourceLib, kLiveLib, fs::copy_options::overwrite_existing);
 
-    PluginLoader loader(kLiveLib);
-    if (!loader.load(&api)) return 1;
+    PluginManager manager(&api);
+    manager.load(kLiveLib);
 
     std::mutex loaderMutex;
     std::atomic<bool> reloadPending = false;
@@ -47,14 +47,15 @@ int main() {
         if (reloadPending.exchange(false)) {
             std::cout << "Change detected -- reloading plugin...\n";
             std::lock_guard<std::mutex> lock(loaderMutex);
-            loader.unload();
+            // unload first so kLiveLib is no longer dlopen'd, then overwrite it
+            manager.unloadAll();
             fs::copy_file(kSourceLib, kLiveLib, fs::copy_options::overwrite_existing);
-            loader.load(&api);  // same API instance, new plugin code
+            manager.load(kLiveLib);
         }
 
         {
             std::lock_guard<std::mutex> lock(loaderMutex);
-            loader.update(0.016f);
+            manager.updateAll(0.016f);
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -62,6 +63,6 @@ int main() {
 
     watcher.stop();
     watchThread.join();
-    loader.unload();
+    manager.unloadAll(); 
     return 0;
 }

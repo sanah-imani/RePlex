@@ -14,6 +14,7 @@ target_include_directories(plugin PUBLIC plugin)
 add_executable(host
     host/main.cpp
     host/plugin_loader.cpp
+    runtime/plugin_manager.cpp
     runtime/watcher.cpp
 )
 
