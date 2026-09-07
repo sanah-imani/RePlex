@@ -2,6 +2,17 @@
 
 #include <iostream>
 
-void update(float dt){
-    std::cout << "Pluggin running, dt = " << dt << "\n";
+void init()
+{
+    std::cout << "Plugin init\n";
+}
+
+void update(float dt)
+{
+    std::cout << "Plugin running, dt = " << dt << "\n";
+}
+
+void shutdown()
+{
+    std::cout << "Plugin shutdown\n";
 }
