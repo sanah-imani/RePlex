@@ -35,10 +35,20 @@ bool PluginLoader::load(HostAPI* api)
     m_shutdown = reinterpret_cast<ShutdownFunc>(dlsym(m_handle, "shutdown"));
     dlerror();
 
+    m_serialize = reinterpret_cast<SerializeFunc>(dlsym(m_handle, "serialize" ));
+    dlerror();
+
+    m_deserialize = reinterpret_cast<DeserializeFunc>(dlsym(m_handle, "deserialize"));
+    dlerror();
+
     std::cout << "Plugin loaded successfully.\n";
 
     // Pass the host API into the plugin on init
     if (m_init) m_init(api);
+
+    if (m_hasState && m_deserialize){
+        m_deserialize(m_stateBuffer.data(), m_stateSize);
+    }
 
     return true;
 }
@@ -46,6 +56,12 @@ bool PluginLoader::load(HostAPI* api)
 void PluginLoader::unload()
 {
     if (m_handle) {
+
+        if (m_serialize){
+            m_serialize(m_stateBuffer.data(), &m_stateSize);
+            m_hasState = true;
+        }
+        
         if (m_shutdown) m_shutdown();
 
         dlclose(m_handle);
@@ -54,6 +70,8 @@ void PluginLoader::unload()
         m_init     = nullptr;
         m_update   = nullptr;
         m_shutdown = nullptr;
+        m_serialize = nullptr;
+        m_deserialize = nullptr;
 
         std::cout << "Plugin unloaded.\n";
     }

@@ -1,4 +1,6 @@
 #pragma once
+#include <array>
+#include <cstddef>
 #include <string>
 #include "host_api.hpp"
 
@@ -21,8 +23,17 @@ private:
     using InitFunc     = void (*)(HostAPI*);
     using UpdateFunc   = void (*)(float);
     using ShutdownFunc = void (*)();
+    using SerializeFunc = void (*) (void*, size_t*);
+    using DeserializeFunc = void(*)(const void*, size_t);
 
     InitFunc     m_init     = nullptr;
     UpdateFunc   m_update   = nullptr;
     ShutdownFunc m_shutdown = nullptr;
+    SerializeFunc m_serialize = nullptr;
+    DeserializeFunc m_deserialize = nullptr;
+
+    static constexpr size_t kMaxStateSize = 1024;
+    std::array<std::byte, kMaxStateSize> m_stateBuffer;
+    size_t m_stateSize = 0;
+    bool m_hasState = false;
 };
