@@ -47,10 +47,8 @@ int main() {
         if (reloadPending.exchange(false)) {
             std::cout << "Change detected -- reloading plugin...\n";
             std::lock_guard<std::mutex> lock(loaderMutex);
-            // unload first so kLiveLib is no longer dlopen'd, then overwrite it
-            manager.unloadAll();
-            fs::copy_file(kSourceLib, kLiveLib, fs::copy_options::overwrite_existing);
-            manager.load(kLiveLib);
+            // reloadAll keeps same loader instances so state buffers survive
+            manager.reloadAll(kSourceLib, kLiveLib);
         }
 
         {
