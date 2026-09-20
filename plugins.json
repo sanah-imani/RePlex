@@ -1,0 +1,9 @@
+{
+    "plugins": [
+        {
+            "name":  "game",
+            "path":  "./build/libplugin.so",
+            "watch": true
+        }
+    ]
+}
