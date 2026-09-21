@@ -14,9 +14,10 @@ target_include_directories(plugin PUBLIC plugin)
 add_executable(host
     host/main.cpp
     host/plugin_loader.cpp
+    runtime/manifest.cpp
     runtime/plugin_manager.cpp
     runtime/watcher.cpp
 )
 
-target_include_directories(host PRIVATE host runtime)
+target_include_directories(host PRIVATE host runtime third_party)
 target_link_libraries(host PRIVATE dl)
